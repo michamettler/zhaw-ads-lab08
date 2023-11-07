@@ -1,7 +1,6 @@
 package ch.zhaw.ads;
 
 import java.awt.*;
-import java.util.Optional;
 import java.util.Scanner;
 
 public class LabyrinthServer implements CommandExecutor {
