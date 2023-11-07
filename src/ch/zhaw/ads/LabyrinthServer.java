@@ -1,5 +1,7 @@
 package ch.zhaw.ads;
 
+import javax.swing.text.html.HTMLDocument;
+import java.awt.*;
 import java.util.Scanner;
 
 public class LabyrinthServer implements CommandExecutor {
@@ -24,7 +26,15 @@ public class LabyrinthServer implements CommandExecutor {
     }
 
     public void drawLabyrinth(Graph<DijkstraNode, Edge> graph) {
-        // TODO implement 8.3
+        g.setColor(Color.GRAY);
+        g.fillRect(0,0,10,7);
+        g.setColor(Color.WHITE);
+
+        for (DijkstraNode curr : graph.getNodes()) {
+            for (Edge edge : curr.getEdges()) {
+                g.drawPath(curr.getName(), edge.getDest().getName(), false);
+            }
+        }
     }
 
     private boolean search(DijkstraNode current, DijkstraNode ziel) {
