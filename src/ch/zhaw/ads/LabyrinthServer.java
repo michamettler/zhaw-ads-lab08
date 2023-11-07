@@ -42,7 +42,10 @@ public class LabyrinthServer implements CommandExecutor {
         for (Edge edge : current.edges) {
             DijkstraNode edgeDest = (DijkstraNode) edge.getDest();
             if (!edgeDest.mark) {
-                if (search(edgeDest, ziel)) return true;
+                if (search(edgeDest, ziel)) {
+                    edgeDest.setPrev(current);
+                    return true;
+                }
             }
         }
         current.setMark(false);
@@ -57,11 +60,8 @@ public class LabyrinthServer implements CommandExecutor {
         if (search(start, ziel)) {
             DijkstraNode curr = ziel;
             while (!curr.equals(start)) {
-                Optional<Edge> foundEdge = curr.edges.stream().filter(edge -> graph.findNode(edge.getDest().getName()).getMark()).findAny();
-                if (foundEdge.isEmpty()) return;
-                DijkstraNode prev = graph.findNode(foundEdge.get().getDest().name);
-                g.drawPath(curr.name, prev.name, true);
-                curr = prev;
+                g.drawPath(curr.name, curr.getPrev().name, true);
+                curr = curr.getPrev();
             }
         }
     }
