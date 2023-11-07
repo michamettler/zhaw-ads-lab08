@@ -1,7 +1,7 @@
 package ch.zhaw.ads;
 
-import javax.swing.text.html.HTMLDocument;
 import java.awt.*;
+import java.util.Optional;
 import java.util.Scanner;
 
 public class LabyrinthServer implements CommandExecutor {
@@ -15,7 +15,6 @@ public class LabyrinthServer implements CommandExecutor {
             try {
                 graph.addNode(coordinates[0]);
                 graph.addNode(coordinates[1]);
-                graph.findNode(coordinates[1]).setPrev(graph.findNode(coordinates[0]));
                 graph.addEdge(coordinates[0], coordinates[1], 0.0);
                 graph.addEdge(coordinates[1], coordinates[0], 0.0);
             } catch (Throwable e) {
@@ -27,7 +26,7 @@ public class LabyrinthServer implements CommandExecutor {
 
     public void drawLabyrinth(Graph<DijkstraNode, Edge> graph) {
         g.setColor(Color.GRAY);
-        g.fillRect(0,0,10,7);
+        g.fillRect(0, 0, 10, 7);
         g.setColor(Color.WHITE);
 
         for (DijkstraNode curr : graph.getNodes()) {
@@ -38,12 +37,33 @@ public class LabyrinthServer implements CommandExecutor {
     }
 
     private boolean search(DijkstraNode current, DijkstraNode ziel) {
-        return false;// TODO implement 8.4
+        current.setMark(true);
+        if (current.equals(ziel)) return true;
+        for (Edge edge : current.edges) {
+            DijkstraNode edgeDest = (DijkstraNode) edge.getDest();
+            if (!edgeDest.mark) {
+                if (search(edgeDest, ziel)) return true;
+            }
+        }
+        current.setMark(false);
+        return false;
     }
 
     // search and draw result
     public void drawRoute(Graph<DijkstraNode, Edge> graph, String startNode, String zielNode) {
-        // TODO implement 8.4
+        DijkstraNode start = graph.findNode(startNode);
+        DijkstraNode ziel = graph.findNode(zielNode);
+
+        if (search(start, ziel)) {
+            DijkstraNode curr = ziel;
+            while (!curr.equals(start)) {
+                Optional<Edge> foundEdge = curr.edges.stream().filter(edge -> graph.findNode(edge.getDest().getName()).getMark()).findAny();
+                if (foundEdge.isEmpty()) return;
+                DijkstraNode prev = graph.findNode(foundEdge.get().getDest().name);
+                g.drawPath(curr.name, prev.name, true);
+                curr = prev;
+            }
+        }
     }
 
     public String execute(String s) {
